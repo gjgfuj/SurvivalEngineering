@@ -43,11 +43,13 @@ function love.update(delta)
 end
 function love.draw()
     for ix,tbl in ipairs(w1.tiles) do
-        for iy,tile in ipairs(tbl) do
-            local posx = (ix-1)*32-p1.x+love.window.getWidth()/2-32
-            local posy = (iy-1)*32-p1.y+love.window.getHeight()/2-32
-            if not ((posx < -32 or posx > love.window.getWidth()) and (posy < -32 or posy > love.window.getHeight())) then
-                love.graphics.draw(tile, posx, posy)
+        local posx = (ix-1)*32-p1.x+love.window.getWidth()/2-32
+        if not (posx < -32 or posx > love.window.getWidth()) then
+            for iy,tile in ipairs(tbl) do
+                local posy = (iy-1)*32-p1.y+love.window.getHeight()/2-32
+                if not (posy < -32 or posy > love.window.getHeight()) then
+                    love.graphics.draw(tile, posx, posy)
+                end
             end
         end
     end

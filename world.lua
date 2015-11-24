@@ -11,10 +11,10 @@ function bw:setTile(x,y,tile)
     self.tiles[x][y] = tile
 end
 function bw:getWidth()
-    return (#self.tiles)*32
+    return (#self.tiles)*tiles.grass:getWidth()
 end
 function bw:getHeight()
-    return (#(self.tiles[1]))*32
+    return (#(self.tiles[1]))*tiles.grass:getHeight()
 end
 function bw:tick()
     for _, object in pairs(self.objects) do
