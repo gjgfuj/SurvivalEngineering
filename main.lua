@@ -12,6 +12,7 @@ function table.copy(orig)
     end
     return copy
 end
+local debug = true
 local world = require("world")
 local w1
 local player = require("player")
@@ -51,4 +52,7 @@ function love.draw()
         end
     end
     love.graphics.draw(p1.sprite, love.window.getWidth()/2-32, love.window.getHeight()/2-32)
+    if debug then
+        love.graphics.print("FPS: "..tostring(love.timer.getFPS( )), 10, 10)
+    end
 end
