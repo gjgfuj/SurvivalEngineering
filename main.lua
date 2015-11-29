@@ -23,15 +23,12 @@ local o1
 function love.load()
     w1 = world.new(100, 100)
     p1 = player:new()
-    o1 = table.copy(objects.testObject)
-    table.insert(w1.objects, o1)
     table.insert(w1.objects, p1)
 end
 function detectcollision(x,y)
     for _, object in pairs(w1.objects) do
         local ix = object.x-p1.x + love.window.getWidth() / 2
         local iy = object.y-p1.y + love.window.getHeight() / 2
-        print("ix:"..ix.."x:"..x)
         if ix < x and
                 ix+object.sprite:getWidth() > x then
             if iy < y and iy+object.sprite:getHeight() > y then
@@ -39,20 +36,25 @@ function detectcollision(x,y)
             end
         end
     end
+    local ix = 0-p1.x + love.window.getWidth() / 2
+    local iy = 0-p1.y + love.window.getHeight() / 2
+    if x < ix or x > ix+w1:getWidth() or y < iy or y > iy+w1:getHeight() then return "edge" end
     return nil
 end
 function love.mousepressed(x,y)
-    local obj = detectcollision(x,y)
-    if obj then obj.interact() return end
     local newobj = table.copy(objects.testObject)
-    x = math.floor(x/32)*32
-    y = math.floor(y/32)*32
-    if detectcollision(x+newobj.sprite:getWidth(), y) or detectcollision(x+newobj.sprite:getWidth(), y+newobj.sprite:getHeight()) or detectcollision(x, y+newobj.sprite:getHeight()) then
+    newobj.x = math.floor((p1.x-love.window.getWidth() / 2+x)/32)*32
+    newobj.y = math.floor((p1.y-love.window.getHeight() / 2+y)/32)*32
+    x = newobj.x - p1.x + love.window.getWidth() / 2
+    y = newobj.y - p1.y + love.window.getHeight() / 2
+    print("x:"..x.." y:"..y)
+    local obj = detectcollision(x+2,y+2)
+    if obj and obj ~= "edge" then obj.interact() return end
+    local jig = detectcollision(x+newobj.sprite:getWidth()-2, y+2) or detectcollision(x+newobj.sprite:getWidth()-2, y+newobj.sprite:getHeight()-2) or detectcollision(x+2, y+newobj.sprite:getHeight()-2)
+    if jig then
+        print(jig)
         return
     end
-
-    newobj.x = p1.x-love.window.getWidth() / 2+x
-    newobj.y = p1.y - love.window.getHeight() / 2+y
     table.insert(w1.objects, newobj)
 end
 
@@ -163,13 +165,16 @@ function love.draw()
         love.graphics.draw(obj.sprite, obj.x - p1.x + love.window.getWidth() / 2 - 32, obj.y - p1.y + love.window.getHeight() / 2 - 32)
     end
     --love.graphics.draw(p1.sprite, love.window.getWidth()/2-32, love.window.getHeight()/2-32)
+    --Hover Over
     local x = love.mouse.getX()
     local y = love.mouse.getY()
     local newobj = table.copy(objects.testObject)
-    x = math.floor(x/32)*32
-    y = math.floor(y/32)*32
-    if not(detectcollision(x,y) or detectcollision(x+newobj.sprite:getWidth(), y) or detectcollision(x+newobj.sprite:getWidth(), y+newobj.sprite:getHeight()) or detectcollision(x, y+newobj.sprite:getHeight())) then
-        love.graphics.draw(newobj.sprite, x-32,y-32)
+    newobj.x = math.floor((p1.x-love.window.getWidth() / 2+x)/32)*32
+    newobj.y = math.floor((p1.y-love.window.getHeight() / 2+y)/32)*32
+    x = newobj.x - p1.x + love.window.getWidth() / 2
+    y = newobj.y - p1.y + love.window.getHeight() / 2
+    if not(detectcollision(x+2,y+2) or detectcollision(x+newobj.sprite:getWidth()-2, y+2) or detectcollision(x+newobj.sprite:getWidth()-2, y+newobj.sprite:getHeight()-2) or detectcollision(x+2, y+newobj.sprite:getHeight()-2)) then
+        love.graphics.draw(newobj.sprite, newobj.x - p1.x + love.window.getWidth() / 2 - 32, newobj.y - p1.y + love.window.getHeight() / 2 - 32)
     end
     if debug then
         love.graphics.print("FPS: " .. tostring(love.timer.getFPS()), 10, 10)
