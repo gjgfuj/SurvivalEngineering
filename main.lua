@@ -20,10 +20,12 @@ local player = require("player")
 local p1
 local objects = require("objects")
 local o1
+require("gui")
 function love.load()
     w1 = world.new(100, 100)
     p1 = player:new()
     table.insert(w1.objects, p1)
+    gui.create("frame")
 end
 function detectcollision(x,y)
     for _, object in pairs(w1.objects) do
@@ -41,7 +43,8 @@ function detectcollision(x,y)
     if x < ix or x > ix+w1:getWidth() or y < iy or y > iy+w1:getHeight() then return "edge" end
     return nil
 end
-function love.mousepressed(x,y)
+function love.mousepressed(x,y,btn)
+    gui.buttonCheck(x,y,btn)
     local newobj = table.copy(objects.testObject)
     newobj.x = math.floor((p1.x-love.window.getWidth() / 2+x)/32)*32
     newobj.y = math.floor((p1.y-love.window.getHeight() / 2+y)/32)*32
@@ -59,6 +62,7 @@ function love.mousepressed(x,y)
 end
 
 function love.update(delta)
+    gui.update()
     for _, object in pairs(w1.objects) do
             object:update(delta)
         end
@@ -150,6 +154,7 @@ function love.update(delta)
 end
 
 function love.draw()
+    gui.draw()
     for ix, tbl in ipairs(w1.tiles) do
         local posx = (ix - 1) * 32 - p1.x + love.window.getWidth() / 2 - 32
         if not (posx < -32 or posx > love.window.getWidth()) then
