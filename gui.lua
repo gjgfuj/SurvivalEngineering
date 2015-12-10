@@ -1,4 +1,4 @@
-
+--Modified version of GUI System borrowed from Fortune117/LuaEngine.
 
 local lg = love.graphics
 local lm = love.mouse

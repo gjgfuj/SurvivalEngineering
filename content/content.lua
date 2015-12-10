@@ -1,0 +1,1 @@
+newmoon.mod.create("SurvivalEngineeringContent")

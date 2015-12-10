@@ -21,11 +21,15 @@ local p1
 local objects = require("objects")
 local o1
 require("gui")
+local newmoon = require("newmoonimpl")
 function love.load()
     w1 = world.new(100, 100)
     p1 = player:new()
     table.insert(w1.objects, p1)
-    gui.create("frame")
+    local frame = gui.create("frame")
+    frame:setSize(300,300)
+    frame:setPos(200,200)
+    newmoon.load()
 end
 function detectcollision(x,y)
     for _, object in pairs(w1.objects) do
@@ -154,7 +158,6 @@ function love.update(delta)
 end
 
 function love.draw()
-    gui.draw()
     for ix, tbl in ipairs(w1.tiles) do
         local posx = (ix - 1) * 32 - p1.x + love.window.getWidth() / 2 - 32
         if not (posx < -32 or posx > love.window.getWidth()) then
@@ -181,6 +184,7 @@ function love.draw()
     if not(detectcollision(x+2,y+2) or detectcollision(x+newobj.sprite:getWidth()-2, y+2) or detectcollision(x+newobj.sprite:getWidth()-2, y+newobj.sprite:getHeight()-2) or detectcollision(x+2, y+newobj.sprite:getHeight()-2)) then
         love.graphics.draw(newobj.sprite, newobj.x - p1.x + love.window.getWidth() / 2 - 32, newobj.y - p1.y + love.window.getHeight() / 2 - 32)
     end
+    gui.draw()
     if debug then
         love.graphics.print("FPS: " .. tostring(love.timer.getFPS()), 10, 10)
     end
