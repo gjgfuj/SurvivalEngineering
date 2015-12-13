@@ -3,16 +3,20 @@ local objects = require("objects")
 local oldObjectCreate = newmoon.object.create
 function newmoon.object.create(b,...)
     local obj = oldObjectCreate(b,...)
-    objects[b.id] = {newmoon=obj}
+    objects[b.id] = {newmoon=obj,interact=function() obj.callback.onUse() end,update=function() obj.callback.tick() end }
     return obj
 end
-function newmoon.texture.new(name)
-    return love.graphics.newImage(love.path.join("assets","sprites",name))
+function newmoon.texture.newSprite(name)
+    return love.graphics.newImage("assets/sprites/"..name..".png")
 end
-function newmoon.load()
-    for obj in pairs(objects) do
+function newmoon.loadMods()
+    require("content.content")
+end
+function newmoon.finalizeLoading()
+    for _,obj in pairs(objects) do
         if obj.newmoon then
             obj.newmoon.init.top(obj.newmoon)
+            obj.sprite = obj.newmoon.sprite
         end
     end
 end

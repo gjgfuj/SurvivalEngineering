@@ -27,49 +27,60 @@ function love.load()
     p1 = player:new()
     table.insert(w1.objects, p1)
     local frame = gui.create("frame")
-    frame:setSize(300,300)
-    frame:setPos(200,200)
-    newmoon.load()
+    frame:setSize(300, 300)
+    frame:setPos(30, 30)
+    newmoon.loadMods()
+    newmoon.finalizeLoading()
 end
-function detectcollision(x,y)
+function detectanytouch(x,y,sprite)
+    local a
+    for x=x,x+(sprite:getWidth()) do
+        for y=y,y+(sprite:getHeight()) do
+          a = a or detectcollision(x + 2, y + 2) or detectcollision(x + sprite:getWidth() - 2, y + 2) or detectcollision(x + sprite:getWidth() - 2, y + sprite:getHeight() - 2) or detectcollision(x + 2, y + sprite:getHeight() - 2)
+        end
+    end
+    return a
+
+end
+function detectcollision(x, y)
     for _, object in pairs(w1.objects) do
-        local ix = object.x-p1.x + love.window.getWidth() / 2
-        local iy = object.y-p1.y + love.window.getHeight() / 2
+        local ix = object.x - p1.x + love.window.getWidth() / 2
+        local iy = object.y - p1.y + love.window.getHeight() / 2
         if ix < x and
-                ix+object.sprite:getWidth() > x then
-            if iy < y and iy+object.sprite:getHeight() > y then
+                ix + object.sprite:getWidth() > x then
+            if iy < y and iy + object.sprite:getHeight() > y then
                 return object
             end
         end
     end
-    local ix = 0-p1.x + love.window.getWidth() / 2
-    local iy = 0-p1.y + love.window.getHeight() / 2
-    if x < ix or x > ix+w1:getWidth() or y < iy or y > iy+w1:getHeight() then return "edge" end
+    local ix = 0 - p1.x + love.window.getWidth() / 2
+    local iy = 0 - p1.y + love.window.getHeight() / 2
+    if x < ix or x > ix + w1:getWidth() or y < iy or y > iy + w1:getHeight() then return "edge" end
     return nil
 end
-function love.mousepressed(x,y,btn)
-    gui.buttonCheck(x,y,btn)
-    local newobj = table.copy(objects.testObject)
-    newobj.x = math.floor((p1.x-love.window.getWidth() / 2+x)/32)*32
-    newobj.y = math.floor((p1.y-love.window.getHeight() / 2+y)/32)*32
+
+function love.mousepressed(x, y, btn)
+    gui.buttonCheck(x, y, btn)
+    local nx = p1.x - love.window.getWidth() / 2 + x
+    local ny = p1.y - love.window.getHeight() / 2 + y
+    local obj = detectcollision(nx, ny)
+    if obj and obj ~= "edge" then obj.interact() return end
+    local newobj = table.copy(objects.testchest)
+    newobj.x = math.floor((p1.x - love.window.getWidth() / 2 + x) / 32) * 32
+    newobj.y = math.floor((p1.y - love.window.getHeight() / 2 + y) / 32) * 32
     x = newobj.x - p1.x + love.window.getWidth() / 2
     y = newobj.y - p1.y + love.window.getHeight() / 2
-    print("x:"..x.." y:"..y)
-    local obj = detectcollision(x+2,y+2)
-    if obj and obj ~= "edge" then obj.interact() return end
-    local jig = detectcollision(x+newobj.sprite:getWidth()-2, y+2) or detectcollision(x+newobj.sprite:getWidth()-2, y+newobj.sprite:getHeight()-2) or detectcollision(x+2, y+newobj.sprite:getHeight()-2)
-    if jig then
-        print(jig)
-        return
+    print("x:" .. x .. " y:" .. y)
+    if not detectanytouch(x,y,newobj.sprite) then
+        table.insert(w1.objects, newobj)
     end
-    table.insert(w1.objects, newobj)
 end
 
 function love.update(delta)
     gui.update()
     for _, object in pairs(w1.objects) do
-            object:update(delta)
-        end
+        object:update(delta)
+    end
     p1.lastx = p1.x
     p1.lasty = p1.y
     if love.keyboard.isDown('w') then
@@ -176,12 +187,12 @@ function love.draw()
     --Hover Over
     local x = love.mouse.getX()
     local y = love.mouse.getY()
-    local newobj = table.copy(objects.testObject)
-    newobj.x = math.floor((p1.x-love.window.getWidth() / 2+x)/32)*32
-    newobj.y = math.floor((p1.y-love.window.getHeight() / 2+y)/32)*32
+    local newobj = table.copy(objects.testchest)
+    newobj.x = math.floor((p1.x - love.window.getWidth() / 2 + x) / 32) * 32
+    newobj.y = math.floor((p1.y - love.window.getHeight() / 2 + y) / 32) * 32
     x = newobj.x - p1.x + love.window.getWidth() / 2
     y = newobj.y - p1.y + love.window.getHeight() / 2
-    if not(detectcollision(x+2,y+2) or detectcollision(x+newobj.sprite:getWidth()-2, y+2) or detectcollision(x+newobj.sprite:getWidth()-2, y+newobj.sprite:getHeight()-2) or detectcollision(x+2, y+newobj.sprite:getHeight()-2)) then
+    if not (detectanytouch(x,y,newobj.sprite)) then
         love.graphics.draw(newobj.sprite, newobj.x - p1.x + love.window.getWidth() / 2 - 32, newobj.y - p1.y + love.window.getHeight() / 2 - 32)
     end
     gui.draw()

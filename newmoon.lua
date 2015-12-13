@@ -29,4 +29,6 @@ newmoon.item = require("newmoon/item")
 newmoon.texture = {}
 newmoon.api = {}
 newmoon.api.inventory = require("newmoon/api/inventory")
+---Implementation methods.
+function newmoon.texture.newSprite() print("newmoon.texture.newSprite not implemented") end
 return newmoon
