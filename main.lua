@@ -12,7 +12,7 @@ function table.copy(orig)
     end
     return copy
 end
-
+local width,height,mode = love.window.getMode()
 local debug = true
 local world = require("world")
 local w1
@@ -44,8 +44,8 @@ function detectanytouch(x,y,sprite)
 end
 function detectcollision(x, y)
     for _, object in pairs(w1.objects) do
-        local ix = object.x - p1.x + love.window.getWidth() / 2
-        local iy = object.y - p1.y + love.window.getHeight() / 2
+        local ix = object.x - p1.x + width / 2
+        local iy = object.y - p1.y + height / 2
         if ix < x and
                 ix + object.sprite:getWidth() > x then
             if iy < y and iy + object.sprite:getHeight() > y then
@@ -53,23 +53,23 @@ function detectcollision(x, y)
             end
         end
     end
-    local ix = 0 - p1.x + love.window.getWidth() / 2
-    local iy = 0 - p1.y + love.window.getHeight() / 2
+    local ix = 0 - p1.x + width / 2
+    local iy = 0 - p1.y + height / 2
     if x < ix or x > ix + w1:getWidth() or y < iy or y > iy + w1:getHeight() then return "edge" end
     return nil
 end
 
 function love.mousepressed(x, y, btn)
     gui.buttonCheck(x, y, btn)
-    local nx = p1.x - love.window.getWidth() / 2 + x
-    local ny = p1.y - love.window.getHeight() / 2 + y
+    local nx = p1.x - width / 2 + x
+    local ny = p1.y - height / 2 + y
     local obj = detectcollision(nx, ny)
     if obj and obj ~= "edge" then obj.interact() return end
     local newobj = table.copy(objects.testchest)
-    newobj.x = math.floor((p1.x - love.window.getWidth() / 2 + x) / 32) * 32
-    newobj.y = math.floor((p1.y - love.window.getHeight() / 2 + y) / 32) * 32
-    x = newobj.x - p1.x + love.window.getWidth() / 2
-    y = newobj.y - p1.y + love.window.getHeight() / 2
+    newobj.x = math.floor((p1.x - width / 2 + x) / 32) * 32
+    newobj.y = math.floor((p1.y - height / 2 + y) / 32) * 32
+    x = newobj.x - p1.x + width / 2
+    y = newobj.y - p1.y + height / 2
     print("x:" .. x .. " y:" .. y)
     if not detectanytouch(x,y,newobj.sprite) then
         table.insert(w1.objects, newobj)
@@ -170,30 +170,30 @@ end
 
 function love.draw()
     for ix, tbl in ipairs(w1.tiles) do
-        local posx = (ix - 1) * 32 - p1.x + love.window.getWidth() / 2 - 32
-        if not (posx < -32 or posx > love.window.getWidth()) then
+        local posx = (ix - 1) * 32 - p1.x + width / 2 - 32
+        if not (posx < -32 or posx > width) then
             for iy, tile in ipairs(tbl) do
-                local posy = (iy - 1) * 32 - p1.y + love.window.getHeight() / 2 - 32
-                if not (posy < -32 or posy > love.window.getHeight()) then
+                local posy = (iy - 1) * 32 - p1.y + height / 2 - 32
+                if not (posy < -32 or posy > height) then
                     love.graphics.draw(tile, posx, posy)
                 end
             end
         end
     end
     for i, obj in ipairs(w1.objects) do
-        love.graphics.draw(obj.sprite, obj.x - p1.x + love.window.getWidth() / 2 - 32, obj.y - p1.y + love.window.getHeight() / 2 - 32)
+        love.graphics.draw(obj.sprite, obj.x - p1.x + width / 2 - 32, obj.y - p1.y + height / 2 - 32)
     end
-    --love.graphics.draw(p1.sprite, love.window.getWidth()/2-32, love.window.getHeight()/2-32)
+    --love.graphics.draw(p1.sprite, width/2-32, height/2-32)
     --Hover Over
     local x = love.mouse.getX()
     local y = love.mouse.getY()
     local newobj = table.copy(objects.testchest)
-    newobj.x = math.floor((p1.x - love.window.getWidth() / 2 + x) / 32) * 32
-    newobj.y = math.floor((p1.y - love.window.getHeight() / 2 + y) / 32) * 32
-    x = newobj.x - p1.x + love.window.getWidth() / 2
-    y = newobj.y - p1.y + love.window.getHeight() / 2
+    newobj.x = math.floor((p1.x - width / 2 + x) / 32) * 32
+    newobj.y = math.floor((p1.y - height / 2 + y) / 32) * 32
+    x = newobj.x - p1.x + width / 2
+    y = newobj.y - p1.y + height / 2
     if not (detectanytouch(x,y,newobj.sprite)) then
-        love.graphics.draw(newobj.sprite, newobj.x - p1.x + love.window.getWidth() / 2 - 32, newobj.y - p1.y + love.window.getHeight() / 2 - 32)
+        love.graphics.draw(newobj.sprite, newobj.x - p1.x + width / 2 - 32, newobj.y - p1.y + height / 2 - 32)
     end
     gui.draw()
     if debug then
