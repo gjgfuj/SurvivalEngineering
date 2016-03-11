@@ -1,2 +1,0 @@
-local objects = {}
-return objects
