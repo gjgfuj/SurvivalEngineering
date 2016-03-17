@@ -1,4 +1,4 @@
-newmoon.mod.create("SurvivalEngineeringContent")
+newmoon.mod.create("survivalengineering")
 local grass = newmoon.tile.create("grass")
 function grass.init:top()
     self.texture = newmoon.texture.new("tiles/grass")
