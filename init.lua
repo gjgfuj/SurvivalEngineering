@@ -5,12 +5,17 @@ function grass.init:top()
 end
 function grass.init:voxel()
     self.texture = newmoon.texture.new("tiles/grass")
+    self.material = newmoon.material.dirt
 end
-local testchest = newmoon.object.create("testchest")
-function testchest.init:top()
+local chester = newmoon.object.create("chester")
+function chester.init:top()
     self.sprite = newmoon.texture.new("sprites/bigchest")
     print("init:top()")
 end
-function testchest.callback:onUse()
+function chester.init:voxel()
+    self.texture = newmoon.texture.new("objects/chester")
+    print("init:voxel()")
+end
+function chester.callback:onUse()
     print("Interacted")
 end
